@@ -1,21 +1,20 @@
 "use client";
 
-import { useState, useEffect, CSSProperties, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const [yesPressed, setYesPressed] = useState(false);
   const [noBtnPosition, setNoBtnPosition] = useState<{ top: string; left: string } | null>(null);
+  const [yesScale, setYesScale] = useState(1);
   const [isClient, setIsClient] = useState(false);
-  const [yesSize, setYesSize] = useState<CSSProperties | undefined>({ height: '36px', fontSize: '14px' });
-  const yesBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   const handleNoMouseEnter = () => {
-    // Ensure we are on client to access window
     if (typeof window !== "undefined") {
       const maxX = window.innerWidth - 100; // Buffer for button width
       const maxY = window.innerHeight - 50; // Buffer for button height
@@ -23,63 +22,121 @@ export default function Home() {
       const x = Math.random() * maxX;
       const y = Math.random() * maxY;
 
+      console.log(x, y);
+
       setNoBtnPosition({ top: `${y}px`, left: `${x}px` });
-      console.log(Number(yesBtnRef.current?.style?.height.slice(0, -2)) + 12);
-      setYesSize({ height: `${Number(yesBtnRef.current?.style?.height.slice(0, -2)) + 16}px`, fontSize: `${Number(yesBtnRef.current?.style?.fontSize.slice(0, -2)) + 7}px` });
+
+      // Increase scale of Yes button
+      setYesScale((prev) => prev + 0.15);
     }
   };
 
   if (yesPressed) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-pink-100 text-center px-4 animate-in fade-in duration-500">
-        <div className="text-9xl mb-4 animate-bounce">💖</div>
-        <h1 className="text-4xl md:text-6xl font-bold text-pink-600 mb-4">
-          Yay! I knew you would say yes!
-        </h1>
-        <p className="text-xl text-pink-400">I'm so happy to be your Valentine, Uuzii!</p>
-        <address>
-          14th Feb 2026, 4 pm, Talbai deer uulziy
-        </address>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-pink-100 text-center px-4 overflow-hidden">
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, type: "spring", stiffness: 120 }}
+          className="flex flex-col items-center"
+        >
+          <motion.div
+            animate={{ scale: [1, .95, 1] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="text-9xl mb-4"
+          >
+            <img
+              src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWVja243c3hvd21tMm01NGhhNXNneWM4MXltNjN3Y3ZreHJ4d294YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26xBuq3ganYoTUwuc/giphy.gif"
+              alt="happy face"
+              className="size-40"
+            />
+          </motion.div>
+          <h1 className="text-4xl md:text-6xl font-bold text-pink-600 mb-4">
+            Yay! I knew you would say yes!
+          </h1>
+          <p className="text-xl text-pink-400 mb-6">I'm so happy to be your Valentine, Uuzii!</p>
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="p-6 bg-white/60 backdrop-blur-sm rounded-xl shadow-md border border-pink-200"
+          >
+            <address className="not-italic text-pink-700 text-lg font-medium">
+              📅 14th Feb 2026<br />
+              ⏰ 4 pm<br />
+              📍 See you at Central!
+            </address>
+          </motion.div>
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-pink-50 relative overflow-hidden px-4">
-      {/* Decorative hearts background - optional simplistic implementation */}
+      {/* Decorative background elements can be added here */}
 
-      <div className="z-10 text-center">
-        <div className="mb-8">
-          <span className="text-8xl" role="img" aria-label="pleading face">🥺</span>
-        </div>
-        <h1 className="text-4xl md:text-6xl font-bold text-pink-600 mb-12 leading-tight">
+      <div className="z-10 text-center w-full max-w-4xl">
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="mb-8"
+        >
+          <span className="text-8xl inline-block" role="img" aria-label="pleading face">
+            <img
+              className="size-30"
+              src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDY3OGY0cnpqenc4cGVmNm1oODZ3dXBjMm54aDljdzU0NmFoemhxdyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vDhDcIEmShbUI/giphy.gif"
+              alt="pleading face"
+            />
+          </span>
+        </motion.div>
+
+        <motion.h1
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-4xl md:text-6xl font-bold text-pink-600 mb-12 leading-tight"
+        >
           Will you be my Valentine, Uuzii?
-        </h1>
+        </motion.h1>
 
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-center min-h-[60px]">
-          <Button
-            style={yesSize}
-            ref={yesBtnRef}
-            className="aspect-3/2"
-            onClick={() => setYesPressed(true)}
-          // className="px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full text-xl shadow-lg transition-transform transform hover:scale-110 active:scale-95 focus:outline-none ring-4 ring-green-300 ring-opacity-50"
+        <div className="flex flex-col md:flex-row gap-8 items-center justify-center min-h-[100px] relative">
+          <motion.div
+            animate={{ scale: yesScale }}
+            transition={{ type: "spring", stiffness: 200, damping: 10 }}
+            className="relative z-20"
           >
-            Yes
-          </Button>
+            <Button
+              onClick={() => setYesPressed(true)}
+              className="bg-emerald-500"
+            >
+              Yes
+            </Button>
+          </motion.div>
 
-          <Button
-            variant={'destructive'}
-            onMouseEnter={handleNoMouseEnter}
-            onClick={handleNoMouseEnter} // Should be practically unclickable, but just in case
-            style={
-              noBtnPosition
-                ? { position: "fixed", top: noBtnPosition.top, left: noBtnPosition.left, transition: "all 0.2s ease" }
-                : { transition: "all 0.2s ease" }
-            }
-          // className={`px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full text-xl shadow-lg focus:outline-none ring-4 ring-red-300 ring-opacity-50 ${noBtnPosition ? "z-50" : ""}`}
-          >
-            No
-          </Button>
+          {/* Wrapper for the No button to handle positioning without affecting flow initially */}
+          <div className="relative">
+            <motion.div
+              initial={false}
+              animate={noBtnPosition ? {
+                top: noBtnPosition.top,
+                left: noBtnPosition.left,
+              } : {}}
+              style={noBtnPosition ? {
+                position: "fixed",
+                zIndex: 9999,
+              } : {}}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              <Button
+                variant={'destructive'}
+                onMouseEnter={handleNoMouseEnter}
+                onClick={handleNoMouseEnter}
+              >
+                No
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
